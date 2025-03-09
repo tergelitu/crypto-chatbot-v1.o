@@ -36,7 +36,7 @@ To run the model locally, follow these steps:
 
 4. Run the chatbot script:
     ```bash
-    python chatbot.py
+    python app.py
     ```
 
 Stay tuned for more updates as we continue to develop and improve our chatbot!
