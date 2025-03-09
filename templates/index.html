@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Chatbot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-box" id="chat-box"></div>
+        <input type="text" id="chat-input" class="chat-input" placeholder="Type your message here...">
+    </div>
+    <script>
+        const cryptoEmojis = {
+            bitcoin: '₿',
+            ethereum: 'Ξ',
+            solana: '◎',
+            cardano: '₳',
+            ripple: '✕',
+            doge: 'Ð'
+        };
+
+        const chatbotEmoji = '🤖';
+
+        document.getElementById('chat-input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                const userInput = e.target.value;
+                e.target.value = '';
+                const chatBox = document.getElementById('chat-box');
+                chatBox.innerHTML += `<div class="user-message"><strong>You:</strong> ${userInput}</div>`;
+                fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `message=${userInput}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    let botMessage = data.response;
+                    for (const [crypto, emoji] of Object.entries(cryptoEmojis)) {
+                        const regex = new RegExp(`\\b${crypto}\\b`, 'gi');
+                        botMessage = botMessage.replace(regex, `${emoji} ${crypto}`);
+                    }
+                    chatBox.innerHTML += `<div class="bot-message"><strong>${chatbotEmoji} Chatbot:</strong> ${botMessage}</div>`;
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                });
+            }
+        });
+    </script>
+</body>
+</html>
